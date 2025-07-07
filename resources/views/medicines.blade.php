@@ -56,7 +56,7 @@
         <form action="/medicines/import-csv" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="file" name="file" accept=".csv" required class="mb-4">
-            <p class="text-sm text-gray-500 mb-2">Max file size: 20MB</p>
+            <p class="text-sm text-gray-500 mb-2">Max file size: 60MB</p>
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="closeImportModal()" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Import</button>
@@ -101,7 +101,7 @@
 
 @push('scripts')
 <script>
-const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const MAX_FILE_SIZE = 60 * 1024 * 1024;
 document.addEventListener('DOMContentLoaded', function () {
     const importForm = document.querySelector('#importModal form');
     if (importForm) {
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const file = fileInput.files[0];
                 if (file.size > MAX_FILE_SIZE) {
                     e.preventDefault();
-                    showToast('File is too large. Max allowed size is 20MB.');
+                    showToast('File is too large. Max allowed size is 60MB.');
                 }
             }
         });
