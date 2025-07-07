@@ -11,9 +11,10 @@
             <button onclick="openCreateModal()" class="bg-green-500 text-white px-4 py-2 rounded shadow">Add Medicine</button>
         </div>
     </div>
-    <div class="flex justify-between items-center mb-2">
-        <input type="text" id="searchInput" placeholder="Search..." class="border rounded px-3 py-2 w-1/3" oninput="filterTable()">
-    </div>
+    <form method="GET" action="{{ url('medicines') }}" class="mb-4 flex gap-2">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search..." class="border rounded px-3 py-2 w-1/3">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
+    </form>
     <div class="overflow-x-auto bg-white rounded shadow">
         <table class="min-w-full divide-y divide-gray-200" id="medicinesTable">
             <thead class="bg-gray-50">
@@ -45,8 +46,9 @@
             </tbody>
         </table>
     </div>
-    <!-- Pagination placeholder (for backend pagination) -->
-    {{-- $medicines->links() if using pagination --}}
+    <div class="mt-4">
+        {{ $medicines->links() }}
+    </div>
 </div>
 
 <!-- Import Modal -->
@@ -151,13 +153,6 @@ function showToast(message) {
     toast.innerText = message;
     toast.classList.remove('hidden');
     setTimeout(() => toast.classList.add('hidden'), 3000);
-}
-function filterTable() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const rows = document.querySelectorAll('#medicinesTable tbody tr');
-    rows.forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(input) ? '' : 'none';
-    });
 }
 </script>
 @endpush

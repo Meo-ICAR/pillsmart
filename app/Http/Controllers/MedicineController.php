@@ -12,9 +12,22 @@ class MedicineController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $medicines = Medicine::all();
+        $query = Medicine::query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('codice_aic', 'like', "%$search%")
+                  ->orWhere('denominazione', 'like', "%$search%")
+                  ->orWhere('descrizione', 'like', "%$search%")
+                  ->orWhere('ragione_sociale', 'like', "%$search%");
+            });
+        }
+
+        $medicines = $query->orderBy('id', 'desc')->paginate(20)->withQueryString();
+
         return view('medicines', compact('medicines'));
     }
 
