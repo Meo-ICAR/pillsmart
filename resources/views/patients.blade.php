@@ -25,6 +25,7 @@
                     <th class="px-4 py-2">Sleep</th>
                     <th class="px-4 py-2">Address</th>
                     <th class="px-4 py-2">User ID</th>
+                    <th class="px-4 py-2">Anamnesi</th>
                     <th class="px-4 py-2">Actions</th>
                 </tr>
             </thead>
@@ -40,8 +41,9 @@
                         <td class="px-4 py-2">{{ $patient->sleep_hour }}</td>
                         <td class="px-4 py-2">{{ $patient->address }}</td>
                         <td class="px-4 py-2">{{ $patient->user_id }}</td>
+                        <td class="px-4 py-2">{{ Str::limit($patient->anamnesi, 50) }}</td>
                         <td class="px-4 py-2 flex gap-2">
-                            <button onclick="openEditModal({{ $patient->id }}, '{{ addslashes($patient->name) }}', '{{ $patient->date_of_birth }}', '{{ $patient->breakfast_hour }}', '{{ $patient->lunch_hour }}', '{{ $patient->dinner_hour }}', '{{ $patient->wakeup_hour }}', '{{ $patient->sleep_hour }}', '{{ addslashes($patient->address) }}', '{{ $patient->user_id }}')" class="text-blue-600 hover:underline">Edit</button>
+                            <button onclick="openEditModal({{ $patient->id }}, '{{ addslashes($patient->name) }}', '{{ $patient->date_of_birth }}', '{{ $patient->breakfast_hour }}', '{{ $patient->lunch_hour }}', '{{ $patient->dinner_hour }}', '{{ $patient->wakeup_hour }}', '{{ $patient->sleep_hour }}', '{{ addslashes($patient->address) }}', '{{ $patient->user_id }}', '{{ addslashes($patient->anamnesi) }}')" class="text-blue-600 hover:underline">Edit</button>
                             <form action="/patients/{{ $patient->id }}" method="POST" onsubmit="return confirm('Delete this patient?')">
                                 @csrf
                                 @method('DELETE')
@@ -101,6 +103,10 @@
                 <label class="block mb-1 font-medium">User ID</label>
                 <input type="number" name="user_id" id="crudUserId" class="border rounded px-3 py-2 w-full">
             </div>
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Anamnesi</label>
+                <textarea name="anamnesi" id="crudAnamnesi" class="border rounded px-3 py-2 w-full"></textarea>
+            </div>
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="closeCrudModal()" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Save</button>
@@ -127,9 +133,10 @@ function openCreateModal() {
     document.getElementById('crudSleep').value = '';
     document.getElementById('crudAddress').value = '';
     document.getElementById('crudUserId').value = '';
+    document.getElementById('crudAnamnesi').value = '';
     document.getElementById('crudModal').classList.remove('hidden');
 }
-function openEditModal(id, name, dob, breakfast, lunch, dinner, wakeup, sleep, address, user_id) {
+function openEditModal(id, name, dob, breakfast, lunch, dinner, wakeup, sleep, address, user_id, anamnesi) {
     document.getElementById('crudModalTitle').innerText = 'Edit Patient';
     document.getElementById('crudForm').action = '/patients/' + id;
     document.getElementById('crudFormMethod').value = 'PUT';
@@ -142,6 +149,7 @@ function openEditModal(id, name, dob, breakfast, lunch, dinner, wakeup, sleep, a
     document.getElementById('crudSleep').value = sleep;
     document.getElementById('crudAddress').value = address;
     document.getElementById('crudUserId').value = user_id;
+    document.getElementById('crudAnamnesi').value = anamnesi;
     document.getElementById('crudModal').classList.remove('hidden');
 }
 function closeCrudModal() {

@@ -16,5 +16,19 @@ class Patient extends Model
         'sleep_hour',
         'address',
         'user_id',
+        'anamnesi',
     ];
+
+    public function doctors()
+    {
+        return $this->belongsToMany(Doctor::class);
+    }
+
+    public function caregivers()
+    {
+        return $this->belongsToMany(Caregiver::class)
+            ->withPivot('fromdate', 'todate', 'deleted_at')
+            ->withTimestamps()
+            ->withTrashed();
+    }
 }
