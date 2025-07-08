@@ -14,5 +14,6 @@ class Device extends Model
         'patient_id',
         'istoupdate',
         'updated_at',
+        'pinged_at',
     ];
 }

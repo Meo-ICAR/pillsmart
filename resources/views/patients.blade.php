@@ -77,23 +77,23 @@
             </div>
             <div class="mb-4">
                 <label class="block mb-1 font-medium">Breakfast Hour</label>
-                <input type="time" name="breakfast_hour" id="crudBreakfast" class="border rounded px-3 py-2 w-full">
+                <input type="time" name="breakfast_hour" id="crudBreakfast" class="border rounded px-3 py-2 w-full" step="60">
             </div>
             <div class="mb-4">
                 <label class="block mb-1 font-medium">Lunch Hour</label>
-                <input type="time" name="lunch_hour" id="crudLunch" class="border rounded px-3 py-2 w-full">
+                <input type="time" name="lunch_hour" id="crudLunch" class="border rounded px-3 py-2 w-full" step="60">
             </div>
             <div class="mb-4">
                 <label class="block mb-1 font-medium">Dinner Hour</label>
-                <input type="time" name="dinner_hour" id="crudDinner" class="border rounded px-3 py-2 w-full">
+                <input type="time" name="dinner_hour" id="crudDinner" class="border rounded px-3 py-2 w-full" step="60">
             </div>
             <div class="mb-4">
                 <label class="block mb-1 font-medium">Wakeup Hour</label>
-                <input type="time" name="wakeup_hour" id="crudWakeup" class="border rounded px-3 py-2 w-full">
+                <input type="time" name="wakeup_hour" id="crudWakeup" class="border rounded px-3 py-2 w-full" step="60">
             </div>
             <div class="mb-4">
                 <label class="block mb-1 font-medium">Sleep Hour</label>
-                <input type="time" name="sleep_hour" id="crudSleep" class="border rounded px-3 py-2 w-full">
+                <input type="time" name="sleep_hour" id="crudSleep" class="border rounded px-3 py-2 w-full" step="60">
             </div>
             <div class="mb-4">
                 <label class="block mb-1 font-medium">Address</label>

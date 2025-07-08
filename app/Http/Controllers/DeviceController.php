@@ -38,6 +38,28 @@ class DeviceController extends Controller
         return redirect()->route('devices.index')->with('success', 'Device created successfully!');
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/devices/{id}",
+     *     summary="Get a device by ID",
+     *     tags={"Devices"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the device",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Device found"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Device not found"
+     *     )
+     * )
+     */
     public function show(Device $device)
     {
         return $device;
@@ -64,5 +86,15 @@ class DeviceController extends Controller
     {
         $device->delete();
         return redirect()->route('devices.index')->with('success', 'Device deleted successfully!');
+    }
+
+    public function ping(Device $device)
+    {
+        $device->pinged_at = now();
+        $device->save();
+        if ($device->istoupdate) {
+            return response()->json(['message' => 'Update required'], 201);
+        }
+        return response()->json(['message' => 'Ping received'], 200);
     }
 }

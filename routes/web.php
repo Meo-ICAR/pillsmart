@@ -30,3 +30,4 @@ Route::get('caregiver-patients', [CaregiverPatientController::class, 'index'])->
 Route::post('caregiver-patients', [CaregiverPatientController::class, 'store'])->name('caregiver-patients.store');
 Route::delete('caregiver-patients/{id}', [CaregiverPatientController::class, 'destroy'])->name('caregiver-patients.destroy');
 Route::post('caregiver-patients/{id}/restore', [CaregiverPatientController::class, 'restore'])->name('caregiver-patients.restore');
+Route::post('api/devices/{device}/ping', [DeviceController::class, 'ping']);

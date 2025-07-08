@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Medicine;
 use Illuminate\Http\Request;
-use App\Imports\MedicinesImport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class MedicineController extends Controller
 {
@@ -110,17 +108,5 @@ class MedicineController extends Controller
     {
         $medicine->delete();
         return response()->json(null, 204);
-    }
-
-    /**
-     * Import medicines from a CSV file.
-     */
-    public function importCsv(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|mimes:csv,txt',
-        ]);
-        Excel::import(new MedicinesImport, $request->file('file'));
-        return redirect()->back()->with('success', 'Medicines imported successfully!');
     }
 }
