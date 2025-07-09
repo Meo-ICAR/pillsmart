@@ -7,23 +7,20 @@ use Illuminate\Http\Request;
 
 class CaregiverController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the caregivers.
+     */
+    public function index()
     {
-        $query = Caregiver::query();
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                  ->orWhere('kind', 'like', "%$search%")
-                  ->orWhere('user_id', $search);
-            });
-        }
-        $caregivers = $query->orderBy('id', 'desc')->paginate(20)->withQueryString();
-        return view('caregivers', compact('caregivers'));
+        $caregivers = \App\Models\Caregiver::all();
+        return response()->json($caregivers);
     }
 
     public function create() { /* Not used, handled by modal */ }
 
+    /**
+     * Store a newly created caregiver in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -31,31 +28,43 @@ class CaregiverController extends Controller
             'kind' => 'nullable|string|max:255',
             'user_id' => 'nullable|integer|exists:users,id',
         ]);
-        Caregiver::create($validated);
-        return redirect()->route('caregivers.index')->with('success', 'Caregiver created successfully!');
+        $caregiver = \App\Models\Caregiver::create($validated);
+        return response()->json($caregiver, 201);
     }
 
-    public function show(Caregiver $caregiver)
+    /**
+     * Display the specified caregiver.
+     */
+    public function show($id)
     {
-        return $caregiver;
+        $caregiver = \App\Models\Caregiver::findOrFail($id);
+        return response()->json($caregiver);
     }
 
     public function edit(Caregiver $caregiver) { /* Not used, handled by modal */ }
 
-    public function update(Request $request, Caregiver $caregiver)
+    /**
+     * Update the specified caregiver in storage.
+     */
+    public function update(Request $request, $id)
     {
+        $caregiver = \App\Models\Caregiver::findOrFail($id);
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
             'kind' => 'nullable|string|max:255',
             'user_id' => 'nullable|integer|exists:users,id',
         ]);
         $caregiver->update($validated);
-        return redirect()->route('caregivers.index')->with('success', 'Caregiver updated successfully!');
+        return response()->json($caregiver);
     }
 
-    public function destroy(Caregiver $caregiver)
+    /**
+     * Remove the specified caregiver from storage.
+     */
+    public function destroy($id)
     {
+        $caregiver = \App\Models\Caregiver::findOrFail($id);
         $caregiver->delete();
-        return redirect()->route('caregivers.index')->with('success', 'Caregiver deleted successfully!');
+        return response()->json(['message' => 'Caregiver deleted successfully']);
     }
 }

@@ -7,52 +7,64 @@ use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the doctors.
+     */
+    public function index()
     {
-        $query = Doctor::query();
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                  ->orWhere('user_id', $search);
-            });
-        }
-        $doctors = $query->orderBy('id', 'desc')->paginate(20)->withQueryString();
-        return view('doctors', compact('doctors'));
+        $doctors = \App\Models\Doctor::all();
+        return response()->json($doctors);
     }
 
     public function create() { /* Not used, handled by modal */ }
 
+    /**
+     * Store a newly created doctor in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
+            'kind' => 'nullable|string|max:255',
             'user_id' => 'nullable|integer|exists:users,id',
         ]);
-        Doctor::create($validated);
-        return redirect()->route('doctors.index')->with('success', 'Doctor created successfully!');
+        $doctor = \App\Models\Doctor::create($validated);
+        return response()->json($doctor, 201);
     }
 
-    public function show(Doctor $doctor)
+    /**
+     * Display the specified doctor.
+     */
+    public function show($id)
     {
-        return $doctor;
+        $doctor = \App\Models\Doctor::findOrFail($id);
+        return response()->json($doctor);
     }
 
     public function edit(Doctor $doctor) { /* Not used, handled by modal */ }
 
-    public function update(Request $request, Doctor $doctor)
+    /**
+     * Update the specified doctor in storage.
+     */
+    public function update(Request $request, $id)
     {
+        $doctor = \App\Models\Doctor::findOrFail($id);
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
+            'kind' => 'nullable|string|max:255',
             'user_id' => 'nullable|integer|exists:users,id',
         ]);
         $doctor->update($validated);
-        return redirect()->route('doctors.index')->with('success', 'Doctor updated successfully!');
+        return response()->json($doctor);
     }
 
-    public function destroy(Doctor $doctor)
+    /**
+     * Remove the specified doctor from storage.
+     */
+    public function destroy($id)
     {
+        $doctor = \App\Models\Doctor::findOrFail($id);
         $doctor->delete();
-        return redirect()->route('doctors.index')->with('success', 'Doctor deleted successfully!');
+        return response()->json(['message' => 'Doctor deleted successfully']);
     }
 }

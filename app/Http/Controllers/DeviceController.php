@@ -7,22 +7,20 @@ use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the devices.
+     */
+    public function index()
     {
-        $query = Device::query();
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                  ->orWhere('mac', 'like', "%$search%");
-            });
-        }
-        $devices = $query->orderBy('id', 'desc')->paginate(20)->withQueryString();
-        return view('devices', compact('devices'));
+        $devices = \App\Models\Device::all();
+        return response()->json($devices);
     }
 
     public function create() { /* Not used, handled by modal */ }
 
+    /**
+     * Store a newly created device in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -34,41 +32,27 @@ class DeviceController extends Controller
             'istoupdate' => 'nullable|boolean',
             'updated_at' => 'nullable|date',
         ]);
-        Device::create($validated);
-        return redirect()->route('devices.index')->with('success', 'Device created successfully!');
+        $device = \App\Models\Device::create($validated);
+        return response()->json($device, 201);
     }
 
     /**
-     * @OA\Get(
-     *     path="/api/devices/{id}",
-     *     summary="Get a device by ID",
-     *     tags={"Devices"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the device",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Device found"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Device not found"
-     *     )
-     * )
+     * Display the specified device.
      */
-    public function show(Device $device)
+    public function show($id)
     {
-        return $device;
+        $device = \App\Models\Device::findOrFail($id);
+        return response()->json($device);
     }
 
     public function edit(Device $device) { /* Not used, handled by modal */ }
 
-    public function update(Request $request, Device $device)
+    /**
+     * Update the specified device in storage.
+     */
+    public function update(Request $request, $id)
     {
+        $device = \App\Models\Device::findOrFail($id);
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
             'mac' => 'nullable|string|max:255',
@@ -79,15 +63,45 @@ class DeviceController extends Controller
             'updated_at' => 'nullable|date',
         ]);
         $device->update($validated);
-        return redirect()->route('devices.index')->with('success', 'Device updated successfully!');
+        return response()->json($device);
     }
 
-    public function destroy(Device $device)
+    /**
+     * Remove the specified device from storage.
+     */
+    public function destroy($id)
     {
+        $device = \App\Models\Device::findOrFail($id);
         $device->delete();
-        return redirect()->route('devices.index')->with('success', 'Device deleted successfully!');
+        return response()->json(['message' => 'Device deleted successfully']);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/devices/{device}/ping",
+     *     summary="Ping a device",
+     *     tags={"Devices"},
+     *     @OA\Parameter(
+     *         name="device",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the device to ping",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Ping received"
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Update required"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Device not found (handled by route model binding)"
+     *     )
+     * )
+     */
     public function ping(Device $device)
     {
         $device->pinged_at = now();
