@@ -14,9 +14,17 @@ class DeviceSeeder extends Seeder
         \App\Models\Device::factory()->count(20)->make()->each(function ($device) use ($patientIds) {
             $device->patient_id = fake()->randomElement($patientIds);
             $device->save();
-            // Create at least 5 slots for each device
+            // Create at least 5 slots for each device with unique n
+            $usedNs = [];
             for ($i = 0; $i < 5; $i++) {
-                $device->slots()->create(\App\Models\Slot::factory()->make()->toArray());
+                $newN = 1;
+                while (in_array($newN, $usedNs)) {
+                    $newN++;
+                }
+                $slotData = \App\Models\Slot::factory()->make()->toArray();
+                $slotData['n'] = $newN;
+                $device->slots()->create($slotData);
+                $usedNs[] = $newN;
             }
         });
     }

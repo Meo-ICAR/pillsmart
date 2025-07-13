@@ -307,27 +307,38 @@ class DeviceController extends Controller
                 $slot->delete();
             }
         }
-        // Recreate deleted slots (with new random data)
+        // Recreate deleted slots (with new random data, unique n)
+        $existingNs = $device->slots()->pluck('n')->toArray();
         $deletedCount = $device->slots()->onlyTrashed()->count();
         for ($i = 0; $i < $deletedCount; $i++) {
+            $newN = 1;
+            while (in_array($newN, $existingNs)) {
+                $newN++;
+            }
             $device->slots()->create([
-                'n' => rand(1, 10),
+                'n' => $newN,
                 'operhour' => sprintf('%02d:%02d:00', rand(0, 23), rand(0, 59)),
                 'npill' => rand(1, 5),
                 'name' => 'Slot ' . rand(1, 100),
                 'description' => 'Auto-generated slot',
             ]);
+            $existingNs[] = $newN;
         }
-        // Ensure at least 5 slots exist (not deleted)
+        // Ensure at least 5 slots exist (not deleted, unique n)
         $currentCount = $device->slots()->count();
         for ($i = $currentCount; $i < 5; $i++) {
+            $newN = 1;
+            while (in_array($newN, $existingNs)) {
+                $newN++;
+            }
             $device->slots()->create([
-                'n' => rand(1, 10),
+                'n' => $newN,
                 'operhour' => sprintf('%02d:%02d:00', rand(0, 23), rand(0, 59)),
                 'npill' => rand(1, 5),
                 'name' => 'Slot ' . rand(1, 100),
                 'description' => 'Auto-generated slot',
             ]);
+            $existingNs[] = $newN;
         }
         // Set updated_at to now and istoupdate to true
         $device->updated_at = now();
