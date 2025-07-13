@@ -19,4 +19,28 @@ class Device extends Model
         'updated_at',
         'pinged_at',
     ];
+
+    public function slots()
+    {
+        return $this->hasMany(Slot::class);
+    }
+
+    public function getSlotsByMac($mac)
+    {
+        $device = $this->where('mac', $mac)->first();
+
+        if (!$device) {
+            return null;
+        }
+
+        return $device->slots()
+            ->select('n', 'operhour')
+            ->get()
+            ->map(function ($slot) {
+                return [
+                    'n' => $slot->n,
+                    'opentime' => $slot->operhour ? date('Y-m-d H:i', strtotime($slot->operhour)) : null
+                ];
+            });
+    }
 }

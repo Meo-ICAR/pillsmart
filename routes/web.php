@@ -31,3 +31,4 @@ Route::post('caregiver-patients', [CaregiverPatientController::class, 'store'])-
 Route::delete('caregiver-patients/{id}', [CaregiverPatientController::class, 'destroy'])->name('caregiver-patients.destroy');
 Route::post('caregiver-patients/{id}/restore', [CaregiverPatientController::class, 'restore'])->name('caregiver-patients.restore');
 Route::post('api/devices/{device}/ping', [DeviceController::class, 'ping']);
+Route::get('api/devices/{mac}/slots', [DeviceController::class, 'getSlotsByMac']);
