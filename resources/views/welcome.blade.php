@@ -49,16 +49,54 @@
                 </nav>
             @endif
         </header>
-        <main class="w-full max-w-2xl mx-auto mt-8 p-6 bg-white rounded shadow">
-            <h1 class="text-2xl font-bold mb-4">Device API Usage Guide</h1>
-            <ol class="list-decimal list-inside mb-4 text-lg">
-                <li><strong>Create Device:</strong> <code>POST /api/devices/create</code><br><span class="text-sm">Create a new device by providing <b>name</b> and unique <b>mac</b> address.</span></li>
-                <li><strong>List Devices:</strong> <code>GET /devices</code><br><span class="text-sm">Retrieve all registered devices.</span></li>
-                <li><strong>Ping Device:</strong> <code>POST /api/devices/{mac}/ping</code><br><span class="text-sm">Ping a device by its MAC address to update its status.</span></li>
-                <li><strong>Get Device Slots:</strong> <code>GET /api/devices/{mac}/slots</code><br><span class="text-sm">Retrieve all non-deleted slots for a device. This also resets the <b>istoupdate</b> flag.</span></li>
-                <li><strong>Randomize Slots:</strong> <code>POST /api/devices/{mac}/randomize-slots</code><br><span class="text-sm">Periodically call this to randomize and update slot configurations for a device. This sets <b>istoupdate</b> to true and updates <b>updated_at</b>.</span></li>
+        <main class="w-full max-w-2xl mx-auto mt-12 p-8 bg-gradient-to-br from-blue-50 to-white rounded-2xl shadow-lg border border-blue-100">
+            <div class="flex flex-col items-center mb-8">
+                <div class="rounded-full bg-blue-100 p-4 mb-4 shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m4 4h-1v-4h-1m-4 4h-1v-4h-1m4 4h-1v-4h-1" /></svg>
+                </div>
+                <h1 class="text-3xl font-extrabold text-blue-900 mb-2 text-center">SmartPill Device API Usage Guide</h1>
+                <p class="text-lg text-blue-700 text-center">Follow these steps to interact with your devices and slots using the API.</p>
+            </div>
+            <ol class="list-decimal list-inside mb-6 text-lg space-y-6">
+                <li class="flex items-start gap-3">
+                    <span class="mt-1 text-blue-500">&#128394;</span>
+                    <div>
+                        <strong>Create Device:</strong> <code class="bg-blue-100 px-2 py-1 rounded">POST /api/devices/create</code><br>
+                        <span class="text-sm text-gray-700">Create a new device by providing <b>name</b> and unique <b>mac</b> address.</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="mt-1 text-green-500">&#128196;</span>
+                    <div>
+                        <strong>List Devices:</strong> <code class="bg-green-100 px-2 py-1 rounded">GET /devices</code><br>
+                        <span class="text-sm text-gray-700">Retrieve all registered devices.</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="mt-1 text-yellow-500">&#128276;</span>
+                    <div>
+                        <strong>Ping Device:</strong> <code class="bg-yellow-100 px-2 py-1 rounded">POST /api/devices/{mac}/ping</code><br>
+                        <span class="text-sm text-gray-700">Ping a device by its MAC address to update its status.</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="mt-1 text-purple-500">&#128203;</span>
+                    <div>
+                        <strong>Get Device Slots:</strong> <code class="bg-purple-100 px-2 py-1 rounded">GET /api/devices/{mac}/slots</code><br>
+                        <span class="text-sm text-gray-700">Retrieve all non-deleted slots for a device. This also resets the <b>istoupdate</b> flag.</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="mt-1 text-pink-500">&#9889;</span>
+                    <div>
+                        <strong>Randomize Slots:</strong> <code class="bg-pink-100 px-2 py-1 rounded">POST /api/devices/{mac}/randomize-slots</code><br>
+                        <span class="text-sm text-gray-700">Periodically call this to randomize and update slot configurations for a device. This sets <b>istoupdate</b> to true and updates <b>updated_at</b>.</span>
+                    </div>
+                </li>
             </ol>
-            <p class="text-base text-gray-700">For full API documentation and request/response examples, visit <a href="/api/documentation" class="text-blue-600 underline">/api/documentation</a>.</p>
+            <div class="flex flex-col items-center mt-8">
+                <a href="/api/documentation" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition">View Full API Documentation</a>
+            </div>
         </main>
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
