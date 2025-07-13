@@ -6,33 +6,401 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/devices/{device}/ping": {
+        "/devices": {
+            "get": {
+                "tags": [
+                    "Devices"
+                ],
+                "summary": "Get all devices",
+                "description": "Retrieves a list of all devices in the system",
+                "operationId": "4a7ebc4769d502b352fcf76a7d699a1a",
+                "responses": {
+                    "200": {
+                        "description": "List of devices retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Device 1"
+                                            },
+                                            "mac": {
+                                                "type": "string",
+                                                "example": "00:11:22:33:44:55"
+                                            },
+                                            "nslots": {
+                                                "type": "integer",
+                                                "example": 4
+                                            },
+                                            "annotations": {
+                                                "type": "string",
+                                                "example": "Kitchen device"
+                                            },
+                                            "patient_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "istoupdate": {
+                                                "type": "boolean",
+                                                "example": false
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/devices/create": {
+            "post": {
+                "tags": [
+                    "Devices"
+                ],
+                "summary": "Create a new device (name and MAC required, MAC must be unique)",
+                "description": "Creates a new device. Both 'name' and 'mac' fields are required. The MAC address must be unique.",
+                "operationId": "d068e9574f99c47fe3c0f4ecab152432",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "mac"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Device 1"
+                                    },
+                                    "mac": {
+                                        "type": "string",
+                                        "example": "00:11:22:33:44:55"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Device created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Device 1"
+                                        },
+                                        "mac": {
+                                            "type": "string",
+                                            "example": "00:11:22:33:44:55"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error (MAC must be unique)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "mac": [
+                                                    "The mac has already been taken."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/devices/{mac}/ping": {
             "post": {
                 "tags": [
                     "Devices"
                 ],
                 "summary": "Ping a device",
-                "operationId": "d6e061a5470553ba875046b8798bb2ae",
+                "description": "Sends a ping to a device identified by its MAC address. Updates the device's ping timestamp and returns status information.",
+                "operationId": "fe543a05e4107a74fa8ef90ff8b6b109",
                 "parameters": [
                     {
-                        "name": "device",
+                        "name": "mac",
                         "in": "path",
-                        "description": "ID of the device to ping",
+                        "description": "MAC address of the device to ping",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "example": "00:11:22:33:44:55"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Ping received"
+                        "description": "Ping received successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ping received"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "201": {
-                        "description": "Update required"
+                        "description": "Update required for device",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Update required"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "404": {
-                        "description": "Device not found (handled by route model binding)"
+                        "description": "Device not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Device not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/devices/{mac}/slots": {
+            "get": {
+                "tags": [
+                    "Devices"
+                ],
+                "summary": "Get slots for a device by MAC address",
+                "description": "Retrieves all non-deleted slots associated with a device identified by its MAC address. Returns slot number and operation time in YYYY-MM-dd HH:mm format.",
+                "operationId": "a71a0820fa4439b00c12e4c2d3bcee1b",
+                "parameters": [
+                    {
+                        "name": "mac",
+                        "in": "path",
+                        "description": "MAC address of the device",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "00:11:22:33:44:55"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Slots retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "n": {
+                                                "description": "Slot number",
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "opentime": {
+                                                "description": "Operation time in YYYY-MM-dd HH:mm format",
+                                                "type": "string",
+                                                "example": "2025-07-09 08:30"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Device or slots not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/devices/{mac}/randomize-slots": {
+            "post": {
+                "tags": [
+                    "Devices"
+                ],
+                "summary": "Randomly soft delete and recreate slots for a device",
+                "description": "Randomly soft deletes some slots for the device identified by MAC, recreates them, and ensures at least 5 slots exist for the device. Returns the updated list of slots.",
+                "operationId": "0721ae86e46b22ba171d65acab4e67fd",
+                "parameters": [
+                    {
+                        "name": "mac",
+                        "in": "path",
+                        "description": "MAC address of the device",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "00:11:22:33:44:55"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Slots randomized and recreated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "device_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "n": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "operhour": {
+                                                "type": "string",
+                                                "example": "08:30:00"
+                                            },
+                                            "npill": {
+                                                "type": "integer",
+                                                "example": 2
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Morning Slot"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Take after breakfast"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Device not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }

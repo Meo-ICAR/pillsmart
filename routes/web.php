@@ -32,3 +32,5 @@ Route::delete('caregiver-patients/{id}', [CaregiverPatientController::class, 'de
 Route::post('caregiver-patients/{id}/restore', [CaregiverPatientController::class, 'restore'])->name('caregiver-patients.restore');
 Route::post('api/devices/{device}/ping', [DeviceController::class, 'ping']);
 Route::get('api/devices/{mac}/slots', [DeviceController::class, 'getSlotsByMac']);
+Route::post('api/devices/{mac}/randomize-slots', [DeviceController::class, 'randomizeSlots']);
+Route::post('api/devices/create', [DeviceController::class, 'apiCreateDevice']);

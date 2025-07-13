@@ -44,20 +44,16 @@ class DeviceController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/devices",
-     *     summary="Create a new device",
-     *     description="Creates a new device with the provided information",
+     *     path="/api/devices/create",
+     *     summary="Create a new device (name and MAC required, MAC must be unique)",
+     *     description="Creates a new device. Both 'name' and 'mac' fields are required. The MAC address must be unique.",
      *     tags={"Devices"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             type="object",
+     *             required={"name","mac"},
      *             @OA\Property(property="name", type="string", example="Device 1"),
-     *             @OA\Property(property="mac", type="string", example="00:11:22:33:44:55"),
-     *             @OA\Property(property="nslots", type="integer", example=4),
-     *             @OA\Property(property="annotations", type="string", example="Kitchen device"),
-     *             @OA\Property(property="patient_id", type="integer", example=1),
-     *             @OA\Property(property="istoupdate", type="boolean", example=false)
+     *             @OA\Property(property="mac", type="string", example="00:11:22:33:44:55")
      *         )
      *     ),
      *     @OA\Response(
@@ -68,37 +64,28 @@ class DeviceController extends Controller
      *             @OA\Property(property="id", type="integer", example=1),
      *             @OA\Property(property="name", type="string", example="Device 1"),
      *             @OA\Property(property="mac", type="string", example="00:11:22:33:44:55"),
-     *             @OA\Property(property="nslots", type="integer", example=4),
-     *             @OA\Property(property="annotations", type="string", example="Kitchen device"),
-     *             @OA\Property(property="patient_id", type="integer", example=1),
-     *             @OA\Property(property="istoupdate", type="boolean", example=false),
      *             @OA\Property(property="created_at", type="string", format="date-time"),
      *             @OA\Property(property="updated_at", type="string", format="date-time")
      *         )
      *     ),
      *     @OA\Response(
      *         response=422,
-     *         description="Validation error",
+     *         description="Validation error (MAC must be unique)",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *             @OA\Property(property="errors", type="object")
+     *             @OA\Property(property="errors", type="object", example={"mac": {"The mac has already been taken."}})
      *         )
      *     )
      * )
      */
-    public function store(Request $request)
+    public function apiCreateDevice(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'nullable|string|max:255',
-            'mac' => 'nullable|string|max:255',
-            'nslots' => 'nullable|integer',
-            'annotations' => 'nullable|string',
-            'patient_id' => 'nullable|integer|exists:patients,id',
-            'istoupdate' => 'nullable|boolean',
-            'updated_at' => 'nullable|date',
+            'name' => 'required|string|max:255',
+            'mac' => 'required|string|max:255|unique:devices,mac',
         ]);
-        $device = \App\Models\Device::create($validated);
+        $device = Device::create($validated);
         return response()->json($device, 201);
     }
 
@@ -243,10 +230,104 @@ class DeviceController extends Controller
         $device = new Device();
         $slots = $device->getSlotsByMac($mac);
 
+        // Set istoupdate to false if device found
+        $deviceRecord = Device::where('mac', $mac)->first();
+        if ($deviceRecord) {
+            $deviceRecord->istoupdate = false;
+            $deviceRecord->save();
+        }
+
         if ($slots === null) {
             return response()->json(['message' => 'Device or slots not found'], 404);
         }
 
         return response()->json($slots);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/devices/{mac}/randomize-slots",
+     *     summary="Randomly soft delete and recreate slots for a device",
+     *     description="Randomly soft deletes some slots for the device identified by MAC, recreates them, and ensures at least 5 slots exist for the device. Returns the updated list of slots.",
+     *     tags={"Devices"},
+     *     @OA\Parameter(
+     *         name="mac",
+     *         in="path",
+     *         required=true,
+     *         description="MAC address of the device",
+     *         @OA\Schema(type="string", example="00:11:22:33:44:55")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Slots randomized and recreated successfully",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="device_id", type="integer", example=1),
+     *                 @OA\Property(property="n", type="integer", example=1),
+     *                 @OA\Property(property="operhour", type="string", example="08:30:00"),
+     *                 @OA\Property(property="npill", type="integer", example=2),
+     *                 @OA\Property(property="name", type="string", example="Morning Slot"),
+     *                 @OA\Property(property="description", type="string", example="Take after breakfast"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Device not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Device not found")
+     *         )
+     *     )
+     * )
+     */
+    public function randomizeSlots($mac)
+    {
+        $device = Device::where('mac', $mac)->first();
+        if (!$device) {
+            return response()->json(['message' => 'Device not found'], 404);
+        }
+        $slots = $device->slots()->get();
+        $slotCount = $slots->count();
+        // Randomly soft delete about half of the slots (at least 1 if more than 1 exists)
+        if ($slotCount > 1) {
+            $toDelete = $slots->random((int) ceil($slotCount / 2));
+            foreach ($toDelete as $slot) {
+                $slot->delete();
+            }
+        }
+        // Recreate deleted slots (with new random data)
+        $deletedCount = $device->slots()->onlyTrashed()->count();
+        for ($i = 0; $i < $deletedCount; $i++) {
+            $device->slots()->create([
+                'n' => rand(1, 10),
+                'operhour' => sprintf('%02d:%02d:00', rand(0, 23), rand(0, 59)),
+                'npill' => rand(1, 5),
+                'name' => 'Slot ' . rand(1, 100),
+                'description' => 'Auto-generated slot',
+            ]);
+        }
+        // Ensure at least 5 slots exist (not deleted)
+        $currentCount = $device->slots()->count();
+        for ($i = $currentCount; $i < 5; $i++) {
+            $device->slots()->create([
+                'n' => rand(1, 10),
+                'operhour' => sprintf('%02d:%02d:00', rand(0, 23), rand(0, 59)),
+                'npill' => rand(1, 5),
+                'name' => 'Slot ' . rand(1, 100),
+                'description' => 'Auto-generated slot',
+            ]);
+        }
+        // Set updated_at to now and istoupdate to true
+        $device->updated_at = now();
+        $device->istoupdate = true;
+        $device->save();
+        $updatedSlots = $device->slots()->get();
+        return response()->json($updatedSlots);
     }
 }
