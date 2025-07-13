@@ -78,15 +78,15 @@ class DeviceController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/devices/{device}/ping",
+     *     path="/api/devices/{mac}/ping",
      *     summary="Ping a device",
      *     tags={"Devices"},
      *     @OA\Parameter(
-     *         name="device",
+     *         name="mac",
      *         in="path",
      *         required=true,
-     *         description="ID of the device to ping",
-     *         @OA\Schema(type="integer")
+     *         description="MAC of the device to ping",
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -102,8 +102,12 @@ class DeviceController extends Controller
      *     )
      * )
      */
-    public function ping(Device $device)
+    public function ping(Request $request, $mac)
     {
+        $device = \App\Models\Device::where('mac', $mac)->first();
+        if (!$device) {
+            return response()->json(['message' => 'Device not found'], 404);
+        }
         $device->pinged_at = now();
         $device->save();
         if ($device->istoupdate) {

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id')->nullable();
             $table->boolean('istoupdate')->default(0);
             $table->dateTime('updated_at')->nullable();
-            $table->timestamp('pinged_at')->nullable()->after('updated_at');
+            $table->timestamp('pinged_at')->nullable();
             $table->timestamp('created_at')->nullable();
             $table->timestamp('modified_at')->nullable();
             $table->timestamp('deleted_at')->nullable();
