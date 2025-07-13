@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
             DoctorSeeder::class,
             PatientSeeder::class,
             CaregiverSeeder::class,
-            MedicineSeeder::class,
             PrescriptionSeeder::class,
             DeviceSeeder::class,
             SlotSeeder::class,
