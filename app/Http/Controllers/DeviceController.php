@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Device;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Tag(
+ *     name="Devices",
+ *     description="API usage order: 1) create (POST /api/devices/create), 2) index (GET /devices), 3) ping (POST /api/devices/{mac}/ping), 4) slots (GET /api/devices/{mac}/slots), 5) periodically randomize-slots (POST /api/devices/{mac}/randomize-slots) to check new configurations."
+ * )
+ */
 class DeviceController extends Controller
 {
     /**

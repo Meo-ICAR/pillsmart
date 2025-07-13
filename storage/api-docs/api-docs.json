@@ -409,7 +409,7 @@
     "tags": [
         {
             "name": "Devices",
-            "description": "Devices"
+            "description": "API usage order: 1) create (POST /api/devices/create), 2) index (GET /devices), 3) ping (POST /api/devices/{mac}/ping), 4) slots (GET /api/devices/{mac}/slots), 5) periodically randomize-slots (POST /api/devices/{mac}/randomize-slots) to check new configurations."
         }
     ]
 }

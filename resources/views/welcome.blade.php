@@ -49,7 +49,17 @@
                 </nav>
             @endif
         </header>
-        @yield('content')
+        <main class="w-full max-w-2xl mx-auto mt-8 p-6 bg-white rounded shadow">
+            <h1 class="text-2xl font-bold mb-4">Device API Usage Guide</h1>
+            <ol class="list-decimal list-inside mb-4 text-lg">
+                <li><strong>Create Device:</strong> <code>POST /api/devices/create</code><br><span class="text-sm">Create a new device by providing <b>name</b> and unique <b>mac</b> address.</span></li>
+                <li><strong>List Devices:</strong> <code>GET /devices</code><br><span class="text-sm">Retrieve all registered devices.</span></li>
+                <li><strong>Ping Device:</strong> <code>POST /api/devices/{mac}/ping</code><br><span class="text-sm">Ping a device by its MAC address to update its status.</span></li>
+                <li><strong>Get Device Slots:</strong> <code>GET /api/devices/{mac}/slots</code><br><span class="text-sm">Retrieve all non-deleted slots for a device. This also resets the <b>istoupdate</b> flag.</span></li>
+                <li><strong>Randomize Slots:</strong> <code>POST /api/devices/{mac}/randomize-slots</code><br><span class="text-sm">Periodically call this to randomize and update slot configurations for a device. This sets <b>istoupdate</b> to true and updates <b>updated_at</b>.</span></li>
+            </ol>
+            <p class="text-base text-gray-700">For full API documentation and request/response examples, visit <a href="/api/documentation" class="text-blue-600 underline">/api/documentation</a>.</p>
+        </main>
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
